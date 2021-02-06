@@ -13,19 +13,18 @@ def recommend(business_name):
     
     vendors = get_vendors_set(similar_business_list)
     
-    vendors = filter_vendors_set(vendors)
+    vendors = filter_vendors_set(business_name,vendors)
     
 
     
-    return ["YOHOHO", "YONONON2"]
+    return vendors
 
 
 
 
 def get_similar_businesses(business_name):
     
-    
-    return []
+    return db.get_top_x_most_similar_agency(business_name, 5, c)
 
 def get_vendors_set(similar_businesses_list):
     
@@ -39,8 +38,12 @@ def get_vendors_set(similar_businesses_list):
     return vendors
 
 
-def filter_vendors_set(vendor_set):
-    pass
+def filter_vendors_set(business_name, vendor_set):
+    already_interacting = db.get_vendors_of_single_agency(business_name, c)
+    
+    output = vendor_set.difference(set(already_interacting))
+    
+    return list(output)
 
 
-get_vendors_set(["Fire & Emergency Medical Services"])
+print(recommend("Fire & Emergency Medical Services"))

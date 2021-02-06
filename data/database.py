@@ -35,6 +35,11 @@ def get_all_agencies(connection_cursor):
     agency_list = [row[0] for row in results]
     return agency_list
 
+def get_top_x_most_similar_agency(agency, x, connection_cursor ):
+    results = connection_cursor.execute('SELECT AGENCY_2 from similarity WHERE AGENCY_1 = "{}" ORDER BY similarity_val DESC LIMIT {}'.format(agency, x))
+    return [row[0] for row in results]
+
+
 def get_all_vendors(connection_cursor):
     results = connection_cursor.execute('SELECT DISTINCT VENDOR_NAME from transactions')
     vendor_list = [row[0] for row in results]
