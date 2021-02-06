@@ -4,6 +4,7 @@ import backend.main as bm
 
 
 class Ui_MainWindow(object):
+    
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(975, 729)
