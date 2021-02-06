@@ -20,6 +20,11 @@ def get_vendor_transactions_list(business_name : str, connection_cursor):
     results = connection_cursor.execute('SELECT * FROM transactions WHERE AGENCY = "{}"'.format(business_name))
     return list(results)
 
+
+def get_vendors_of_single_agency(business_name : str, connection_cursor):
+    results = connection_cursor.execute('SELECT DISTINCT VENDOR_NAME FROM transactions WHERE AGENCY = "{}"'.format(business_name))
+    return list(results)
+
 def get_all_agencies(connection_cursor):
     results = connection_cursor.execute('SELECT DISTINCT AGENCY from transactions')
     agency_list = [row[0] for row in results]
