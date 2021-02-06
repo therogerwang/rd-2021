@@ -1,8 +1,7 @@
 import sqlite3
 import data.database as db
 
-conn = sqlite3.connect('storage.db')
-c = conn.cursor()
+c = db.c
 
 def recommend(business_name):
     

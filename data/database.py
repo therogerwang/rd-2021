@@ -3,15 +3,19 @@ import csv
 import numpy as np
 import pandas as pd
 
-# conn = sqlite3.connect('example.db')
-#
-# c = conn.cursor()
+
 def setup():
     conn = sqlite3.connect('storage.db')
     c = conn.cursor()
+    # build_init_table_from_csv(c)
+    # create_similarity_table(c, conn)
+
+    conn.commit()
     
-    create_similarity_table(c, conn)
-    
+    # print(get_vendors_of_single_agency("Fire & Emergency Medical Services",c))
+    result = c.execute('SELECT * from similarity ORDER BY similarity_val DESC')
+    for row in result:
+        print(row)
     conn.close()
 
 
@@ -36,7 +40,7 @@ def get_all_vendors(connection_cursor):
     return vendor_list
 
 def create_similarity_table(connection_cursor, connection):
-    connection_cursor.execute('''DROP TABLE similarity IF EXISTS''')
+    connection_cursor.execute('''DROP TABLE IF EXISTS similarity''')
     connection_cursor.execute('''CREATE TABLE similarity
                  (AGENCY_1 text, AGENCY_2 text, similarity_val real)''')
     
@@ -70,8 +74,9 @@ def create_similarity_table(connection_cursor, connection):
             similarity_value = 0.5 * cos_sim(adj_mat[:,agency_id[agency_1]], adj_mat[:,agency_id[agency_2]]) 
             similarity_value += 0.5 * cos_sim(avg_mat[:,agency_id[agency_1]], avg_mat[:,agency_id[agency_2]]) 
             
-            connection_cursor.execute("INSERT INTO similarity VALUES ('{}', '{}', {})".format(agency_1, agency_2, similarity_value))
-
+            # print("attempting to insert", agency_1, agency_2, similarity_value)
+            connection_cursor.execute('INSERT INTO similarity VALUES ("{}", "{}", {})'.format(agency_1, agency_2, similarity_value))
+            # print("  ... insert successful")
 
 def build_init_table_from_csv(connection_cursor):
     
@@ -96,6 +101,7 @@ def build_init_table_from_csv(connection_cursor):
     
     #insert into table
     connection_cursor.executemany("INSERT INTO transactions (OBJECTID,AGENCY,TRANSACTION_DATE,TRANSACTION_AMOUNT,VENDOR_NAME,VENDOR_STATE_PROVINCE,MCC_DESCRIPTION) VALUES (?,?,?,?,?,?,?);", db_rows)
-
+    
+    
 
 setup()
