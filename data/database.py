@@ -8,7 +8,7 @@ def setup():
     conn = sqlite3.connect('storage.db')
     c = conn.cursor()
     # build_init_table_from_csv(c)
-    create_similarity_table(c, conn)
+    # create_similarity_table(c, conn)
 
     conn.commit()
     
@@ -27,7 +27,8 @@ def get_vendor_transactions_list(business_name : str, connection_cursor):
 
 def get_vendors_of_single_agency(business_name : str, connection_cursor):
     results = connection_cursor.execute('SELECT DISTINCT VENDOR_NAME FROM transactions WHERE AGENCY = "{}"'.format(business_name))
-    return list(results)
+    # print(list(results))
+    return [row[0] for row in results]
 
 def get_all_agencies(connection_cursor):
     results = connection_cursor.execute('SELECT DISTINCT AGENCY from transactions')
@@ -104,4 +105,4 @@ def build_init_table_from_csv(connection_cursor):
     
     
 
-setup()
+# setup()

@@ -1,7 +1,10 @@
 import sqlite3
 import data.database as db
+import os
 
-c = db.c
+conn = sqlite3.connect("../data/storage.db")
+c = conn.cursor()
+
 
 def recommend(business_name):
     
@@ -30,16 +33,14 @@ def get_vendors_set(similar_businesses_list):
     
     for business_name in similar_businesses_list:
         ven_list = db.get_vendors_of_single_agency(business_name, c)
-        print(ven_list)
-        
-        
-        #vendors.add(vendor name)
+        for vendor_name in ven_list:
+            vendors.add(vendor_name)
     
-    
+    return vendors
 
 
 def filter_vendors_set(vendor_set):
     pass
 
 
-get_vendors_set("Fire & Emergency Medical Services")
+get_vendors_set(["Fire & Emergency Medical Services"])
