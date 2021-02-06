@@ -8,7 +8,7 @@ def setup():
     conn = sqlite3.connect('storage.db')
     c = conn.cursor()
     # build_init_table_from_csv(c)
-    # create_similarity_table(c, conn)
+    create_similarity_table(c, conn)
 
     conn.commit()
     
@@ -69,8 +69,8 @@ def create_similarity_table(connection_cursor, connection):
     
     for agency_1 in agencies:
         for agency_2 in agencies:
-            # if agency_1 == agency_2:
-            #     continue
+            if agency_1 == agency_2:
+                continue
             similarity_value = 0.5 * cos_sim(adj_mat[:,agency_id[agency_1]], adj_mat[:,agency_id[agency_2]]) 
             similarity_value += 0.5 * cos_sim(avg_mat[:,agency_id[agency_1]], avg_mat[:,agency_id[agency_2]]) 
             
