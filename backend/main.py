@@ -1,2 +1,2 @@
 def recommend(business_name):
-    return "YOHOHO"
+    return ["YOHOHO", "YONONON2"]
