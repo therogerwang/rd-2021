@@ -4,7 +4,6 @@ import backend.main as bm
 
 
 class Ui_MainWindow(object):
-    
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(975, 729)
@@ -20,7 +19,10 @@ class Ui_MainWindow(object):
         self.label_2.setStyleSheet("color:rgb(255, 255, 255)")
         self.label_2.setObjectName("label_2")
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(50, 380, 281, 24))
+        self.lineEdit.setGeometry(QtCore.QRect(50, 380, 281, 31))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.lineEdit.setFont(font)
         self.lineEdit.setStyleSheet("color:rgb(255, 255, 255)")
         self.lineEdit.setText("")
         self.lineEdit.setObjectName("lineEdit")
@@ -33,7 +35,10 @@ class Ui_MainWindow(object):
         self.label_4.setStyleSheet("color:rgb(255, 255, 255)")
         self.label_4.setObjectName("label_4")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(50, 420, 121, 32))
+        self.pushButton.setGeometry(QtCore.QRect(50, 430, 121, 32))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("color:rgb(42, 57, 144);\n"
 "background-color: rgb(255, 255, 255);")
         self.pushButton.setObjectName("pushButton")
