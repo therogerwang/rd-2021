@@ -4,7 +4,7 @@ import csv
 # conn = sqlite3.connect('example.db')
 #
 # c = conn.cursor()
-def run_me():
+def setup():
     conn = sqlite3.connect('storage.db')
     c = conn.cursor()
 
@@ -12,13 +12,41 @@ def run_me():
     # build_init_table_from_csv(c)
     # conn.commit()
 
-    results = c.execute('SELECT * FROM transactions WHERE AGENCY = "Department of Motor Vehicles" LIMIT 50')
-    for row in results:
-        print(row)
+    vendor_list = get_all_vendors(c)
+    print(vendor_list)
     
     conn.close()
 
 
+def get_vendor_transactions_list(business_name : str, connection_cursor):
+    results = connection_cursor.execute('SELECT * FROM transactions WHERE AGENCY = "{}"'.format(business_name))
+    return list(results)
+
+def get_all_agencies(connection_cursor):
+    results = connection_cursor.execute('SELECT DISTINCT AGENCY from transactions')
+    agency_list = [row[0] for row in results]
+    return agency_list
+
+def get_all_vendors(connection_cursor):
+    results = connection_cursor.execute('SELECT DISTINCT VENDOR_NAME from transactions')
+    vendor_list = [row[0] for row in results]
+    return vendor_list
+
+def create_similarity_table(similarity_func, connection_cursor):
+    connection_cursor.execute('''CREATE TABLE similarity
+                 (AGENCY_1 text, AGENCY_2 text, similarity_val real)''')
+    
+    agencies = get_all_agencies(connection_cursor)
+    
+    for agency_1 in agencies:
+        for agency_2 in agencies:
+            # if agency_1 == agency_2:
+            #     continue
+            
+            similarity_value = similarity_func(agency_1, agency_2)
+            connection_cursor.execute("INSERT INTO similarity VALUES ('{}', '{}', {})".format(agency_1, agency_2, similarity_value))
+            
+    
 
 
 def build_init_table_from_csv(connection_cursor):
@@ -45,19 +73,5 @@ def build_init_table_from_csv(connection_cursor):
     #insert into table
     connection_cursor.executemany("INSERT INTO transactions (OBJECTID,AGENCY,TRANSACTION_DATE,TRANSACTION_AMOUNT,VENDOR_NAME,VENDOR_STATE_PROVINCE,MCC_DESCRIPTION) VALUES (?,?,?,?,?,?,?);", db_rows)
 
-# Insert a row of data
-# c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
-#
-# # Save (commit) the changes
-# conn.commit()
-#
-#
-# t = ('RHAT',)
-# c.execute('SELECT * FROM stocks WHERE symbol=?', t)
-# print(c.fetchone())
-#
-# # We can also close the connection if we are done with it.
-# # Just be sure any changes have been committed or they will be lost.
-# conn.close()
 
-run_me()
+setup()
