@@ -48,22 +48,27 @@ def create_similarity_table(connection_cursor, connection):
     vendor_id = {v:i for i,v in enumerate(vendors)}
     
     # TODO: Test this 
-    query = "SELECT AGENCY, VENDOR_NAME, COUNT(*) AS count FROM transactions GROUP BY AGENCY, VENDOR_NAME"
+    query = "SELECT AGENCY, VENDOR_NAME, COUNT(*) AS count, AVG(ABS(TRANSACTION_AMOUNT)) as avg_amount FROM transactions GROUP BY AGENCY, VENDOR_NAME"
     transactions = pd.read_sql_query(query, connection)
     
     # compare based on frequency 
     adj_mat = np.zeros((len(vendor_id), len(agency_id)))
+    avg_mat = np.zeros((len(vendor_id), len(agency_id)))
+    
     for i, t in transactions.iterrows():
-        mat[agency_id[t['VENDOR_NAME']]][ vendor_id[t['AGENCY']]] = t['count'] 
+        adj_mat[vendor_id[t['VENDOR_NAME']]][agency_id[t['AGENCY']]] = t['count']
+        avg_mat[vendor_id[t['VENDOR_NAME']]][agency_id[t['AGENCY']]] = t['avg_amount']
     
     cos_sim = lambda x,y: np.dot(x, y)/(np.linalg.norm(x)*np.linalg.norm(y))
+    
+    # TODO: edit adj_mat
     
     for agency_1 in agencies:
         for agency_2 in agencies:
             # if agency_1 == agency_2:
             #     continue
-            similarity_value = cos_sim(adj_mat[:,agency_id[agency_1]], 
-                                       adj_mat[:,agency_id[agency_2]])
+            similarity_value = 0.5 * cos_sim(adj_mat[:,agency_id[agency_1]], adj_mat[:,agency_id[agency_2]]) 
+            similarity_value += 0.5 * cos_sim(avg_mat[:,agency_id[agency_1]], avg_mat[:,agency_id[agency_2]]) 
             
             connection_cursor.execute("INSERT INTO similarity VALUES ('{}', '{}', {})".format(agency_1, agency_2, similarity_value))
 
