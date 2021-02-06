@@ -1,6 +1,7 @@
 import sqlite3
 import csv
-import numpy as np 
+import numpy as np
+import pandas as pd
 
 # conn = sqlite3.connect('example.db')
 #
@@ -8,15 +9,11 @@ import numpy as np
 def setup():
     conn = sqlite3.connect('storage.db')
     c = conn.cursor()
-
-
-    # build_init_table_from_csv(c)
-    # conn.commit()
-
-    vendor_list = get_all_vendors(c)
-    print(vendor_list)
+    
+    create_similarity_table(c, conn)
     
     conn.close()
+
 
 
 def get_vendor_transactions_list(business_name : str, connection_cursor):
@@ -33,20 +30,21 @@ def get_all_vendors(connection_cursor):
     vendor_list = [row[0] for row in results]
     return vendor_list
 
-def create_similarity_table(similarity_func, connection_cursor):
+def create_similarity_table(connection_cursor, connection):
+    connection_cursor.execute('''DROP TABLE similarity IF EXISTS''')
     connection_cursor.execute('''CREATE TABLE similarity
                  (AGENCY_1 text, AGENCY_2 text, similarity_val real)''')
     
     agencies = get_all_agencies(connection_cursor)
-    vendors = get_all_vendors(connection_cursor):
+    vendors = get_all_vendors(connection_cursor)
     
     # map each agency and vendor to an arbitray index
     agency_id = {a:i for i,a in enumerate(agencies)}
     vendor_id = {v:i for i,v in enumerate(vendors)}
     
     # TODO: Test this 
-    query = "SELECT AGENCY, VENDOR_NAME, COUNT(AGENCY, VENDOR_NAME) AS count FROM transactions GROUP BY AGENCY, VENDOR_NAME"
-    transactions = pd.read_sql_query(query, connection_cursor)
+    query = "SELECT AGENCY, VENDOR_NAME, COUNT(*) AS count FROM transactions GROUP BY AGENCY, VENDOR_NAME"
+    transactions = pd.read_sql_query(query, connection)
     
     # compare based on frequency 
     adj_mat = np.zeros((len(vendor_id), len(agency_id)))
