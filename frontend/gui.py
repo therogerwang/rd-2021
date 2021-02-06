@@ -1,56 +1,81 @@
-import sys
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 import backend.main as bm
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import pyqtSlot
 
 
-class MyWindow:
+class Ui_MainWindow(object):
 
-    def __init__(self, win):
-        self.win = win
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(954, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(40, 40, 341, 71))
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(60, 170, 321, 31))
+        self.label_2.setObjectName("label_2")
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(60, 210, 281, 24))
+        self.lineEdit.setObjectName("lineEdit")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(530, 120, 341, 31))
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(540, 170, 341, 221))
+        self.label_4.setObjectName("label_4")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(60, 250, 121, 32))
+        self.pushButton.setObjectName("pushButton")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
 
-        self.titlelbl = QLabel("<h1>RecommendMe</h1>", win)
-        self.titlelbl.move(60, 15)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.entrylbl = QLabel("<h2>Enter your business name</h2>", win)
-        self.entrylbl.move(75, 90)
-
-        self.entrybox = QLineEdit(win)
-        self.entrybox.setFont(QFont("Arial, 13"))
-        self.entrybox.move(75, 130)
-
-        self.btn = QPushButton(win)
-        self.btn.setText("Recommend!")
-        self.btn.move(75, 160)
-        self.btn.clicked.connect(self.btn_down)
-
-        self.teset = QLabel(win)
-        self.teset.move(500, 500)
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "recommendr"))
+        self.label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:28pt; font-weight:600;\">recommendr</span></p></body></html>"))
+        self.label_2.setText(_translate("MainWindow", "<h2>Enter your business name</h2>"))
+        self.label_3.setText(_translate("MainWindow", "<h2>Your Top Recommendations</h2>"))
+        self.label_3.hide()
+        self.label_4.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">item1<br/><br/>item2<br/><br/>item3<br/><br/>item4<br/><br/>item5</span></p></body></html>"))
+        self.label_4.hide()
+        self.pushButton.setText(_translate("MainWindow", "Recommend!"))
+        self.pushButton.clicked.connect(self.btn_down)
 
     def btn_down(self):
-        print("HI")
-        busi_name = self.entrybox.text()
+        busi_name = self.lineEdit.text()
         recs = bm.recommend(busi_name)
+        print(busi_name)
+        print(recs)
+        recs_str = self.to_html(recs)
+        print(recs_str)
+        self.label_4.setText(recs_str)
+        self.label_3.show()
+        self.label_4.show()
 
-        self.teset.setText(recs)
+    def to_html(self, arr):
+        ret_str = "<html><head/><body><p><span style=\" font-size:10pt;\">"
 
-        # transform return into html before calling below
-        resulttitlelbl = QLabel("<h2>Your Top Recommendations</h2>", self.win)
-        resulttitlelbl.move(600, 90)
+        arr_len = len(arr)
+        for i in range(arr_len):
+            ret_str += arr[i]
+            if i < arr_len - 1:
+                ret_str += "<br/><br/>"
 
-        resultlbl = QLabel(recs, self.win)
-        resultlbl.move(600, 135)
+        ret_str += "</span></p></body></html>"
+        return ret_str
 
 
-app = QApplication(sys.argv)
-window = QWidget()
-my_win = MyWindow(window)
-
-window.setWindowTitle('PyQt5 App')
-window.setGeometry(100, 100, 1000, 600)
-window.move(60, 15)
-
-window.show()
-sys.exit(app.exec_())
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
