@@ -40,19 +40,20 @@ def create_similarity_table(similarity_func, connection_cursor):
     agencies = get_all_agencies(connection_cursor)
     vendors = get_all_vendors(connection_cursor):
     
-    
-    agency_id = {a:i for a,i in enumerate(agencies)}
-    vendor_id = {v:i for a,i in enumerate(vendors)}
+    # map each agency and vendor to an arbitray index
+    agency_id = {a:i for i,a in enumerate(agencies)}
+    vendor_id = {v:i for i,v in enumerate(vendors)}
     
     # TODO: Test this 
     query = "SELECT AGENCY, VENDOR_NAME, COUNT(AGENCY, VENDOR_NAME) AS count FROM transactions GROUP BY AGENCY, VENDOR_NAME"
     transactions = pd.read_sql_query(query, connection_cursor)
     
+    # compare based on frequency 
     adj_mat = np.zeros((len(vendor_id), len(agency_id)))
     for i, t in transactions.iterrows():
-        mat[agency_id[transactions['VENDOR_NAME']]][ vendor_id[transactions['AGENCY']]] = transactions['count'] 
+        mat[agency_id[t['VENDOR_NAME']]][ vendor_id[t['AGENCY']]] = t['count'] 
     
-    cos_sim = lambda x,y: cos_sim = np.dot(x, y)/(np.linalg.norm(x)*np.linalg.norm(y))
+    cos_sim = lambda x,y: np.dot(x, y)/(np.linalg.norm(x)*np.linalg.norm(y))
     
     for agency_1 in agencies:
         for agency_2 in agencies:
