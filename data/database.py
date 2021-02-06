@@ -1,5 +1,6 @@
 import sqlite3
 import csv
+import numpy as np 
 
 # conn = sqlite3.connect('example.db')
 #
@@ -37,16 +38,30 @@ def create_similarity_table(similarity_func, connection_cursor):
                  (AGENCY_1 text, AGENCY_2 text, similarity_val real)''')
     
     agencies = get_all_agencies(connection_cursor)
+    vendors = get_all_vendors(connection_cursor):
+    
+    
+    agency_id = {a:i for a,i in enumerate(agencies)}
+    vendor_id = {v:i for a,i in enumerate(vendors)}
+    
+    # TODO: Test this 
+    query = "SELECT AGENCY, VENDOR_NAME, COUNT(AGENCY, VENDOR_NAME) AS count FROM transactions GROUP BY AGENCY, VENDOR_NAME"
+    transactions = pd.read_sql_query(query, connection_cursor)
+    
+    adj_mat = np.zeros((len(vendor_id), len(agency_id)))
+    for i, t in transactions.iterrows():
+        mat[agency_id[transactions['VENDOR_NAME']]][ vendor_id[transactions['AGENCY']]] = transactions['count'] 
+    
+    cos_sim = lambda x,y: cos_sim = np.dot(x, y)/(np.linalg.norm(x)*np.linalg.norm(y))
     
     for agency_1 in agencies:
         for agency_2 in agencies:
             # if agency_1 == agency_2:
             #     continue
+            similarity_value = cos_sim(adj_mat[:,agency_id[agency_1]], 
+                                       adj_mat[:,agency_id[agency_2]])
             
-            similarity_value = similarity_func(agency_1, agency_2)
             connection_cursor.execute("INSERT INTO similarity VALUES ('{}', '{}', {})".format(agency_1, agency_2, similarity_value))
-            
-    
 
 
 def build_init_table_from_csv(connection_cursor):
