@@ -71,4 +71,4 @@ def get_vendors_set(business_name, similar_businesses_list):
 #     return list(output)
 
 
-print(recommend("Fire & Emergency Medical Services"))
+#print(recommend("Fire & Emergency Medical Services"))
